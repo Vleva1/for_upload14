@@ -1,0 +1,28 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+{% block content %}
+<h1>Подробно</h1>
+<hr>
+        <table border = 0 width = 100% align = center>
+           <tr align = left>
+                <td>{{ post.title|censor }}</td>
+                <td>{{ post.dt_of_publication|date:'d.m.Y' }}</td>
+                <td>{{ post.text|censor }} </td>
+                <td>{{ post.author }} </td>
+                <td>{{ post.rate_post }} </td>
+            </tr>
+        </table>
+
+
+<hr>
+
+
+
+
+
+{% endblock content %}
