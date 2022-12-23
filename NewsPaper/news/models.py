@@ -2,9 +2,7 @@ from django.db import models
 from datetime import datetime
 
 from django.contrib.auth.models import User
-
-
-
+from django.urls import reverse
 
 article = 'AR'
 news = "NW"
@@ -24,13 +22,14 @@ class Author(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
     def update_rating(self):
         self.rating = 0
-        for comm in Comment.objects.filter(user = self.user):
+        for comm in Comment.objects.filter(user=self.user):
             self.rating += comm.rate_comment
-        for post in Posts.objects.filter(authors = Author.objects.get(user = self.user)):
+        for post in Posts.objects.filter(authors=Author.objects.get(user=self.user)):
             self.rating += post.rate_post * 3
-            for comm_post in Comment.objects.filter(posts = post):
+            for comm_post in Comment.objects.filter(posts=post):
                 self.rating += comm_post.rate_comment
         self.save()
 
@@ -49,8 +48,7 @@ class Posts(models.Model):
     rate_post = models.IntegerField(default=0)
     category = models.ManyToManyField(Category, through = 'PostCategory')
 
-    def __str__(self):
-        return f"{self.author}, {self.title}, {self.text}, {self.rate_post}"
+
     @property
     def post_rating(self):
         return self.rate_post
@@ -72,8 +70,13 @@ class Posts(models.Model):
         self.save()
 
     def preview(self):
-       return self.text[:124]
+        return f'{self.text[:124]}...'
 
+    def __str__(self):
+        return f'Заголовок: {self.title}, Текст: {self.text[:20]}...'
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):
@@ -99,9 +102,13 @@ class Comment(models.Model):
             self.rate_comment = 0
         self.save()
 
+    def __str__(self):
+        return self.text
+
     def like(self):
         self.rate_comment += 1
         self.save()
+
     def dislike(self):
         self.rate_comment -= 1
         self.save()
